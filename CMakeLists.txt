@@ -1,4 +1,4 @@
-project(test)
+project(boost_optinal_ext)
 cmake_minimum_required(VERSION 3.1)
 enable_testing()
 set(BOOST_INCLUDE_DIRS $boost_installation_prefix/include)
