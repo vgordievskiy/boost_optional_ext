@@ -64,14 +64,15 @@ struct is_callable : std::integral_constant<bool, has_operator_fn<typename std::
 /**
 * It's a pipe operator for applying transformations for boost::optional
 * The next function will be applied if boost::optional isn't empty
+* it's alias the "map" operator
 * @param op is a boost::optional<T>
-* @param f is a function that takes boost::optional<T>::value_type
+* @param f is a function that takes boost::optional<T>::value_type and returns a new value
 * @return a new boost::optional
-
+*
 * an example of usage:
 *
-*     int value;
-*     std::cin >> value;
+*    int value;
+*    std::cin >> value;
 *
 *    auto op = boost::optional<int>(value)
 *        // can use as filter
@@ -114,6 +115,35 @@ boost::optional<TOptionalResult> operator|(TOptional&& op, FuncType&& f)
     }
 }
 
+/**
+ * It's a pipe operator for applying extractor for boost::optional
+ * The next function will be applied if boost::optional is empty
+ * it's alias the "flat_map" operator
+ * @param op is a boost::optional<T>
+ * @param f is a function that returns a new boost::optional
+ * @return boost::optional
+ *
+ * an example of usage:
+ *
+ *    int value;
+ *    std::cin >> value;
+ *
+ *    auto op = boost::optional<int>(value)
+ *        // can use as filter
+ *        | [] (int val) -> boost::optional<int>
+ *          {
+ *            return val >= 0 ? boost::optional<int>(val) : boost::none;
+ *          };
+ *
+ *     if (op)
+ *     {
+ *       std::cout << op.get() << std::endl;
+ *     }
+ *     else
+ *     {
+ *         std::cout << "op is empty" << std::endl;
+ *     }
+ */
 template <class TOptional,
           typename FuncType,
           typename TOptionalParam = typename std::remove_reference_t<TOptional>::value_type,
@@ -134,6 +164,39 @@ boost::optional<TOptionalResult> operator|(TOptional&& op, FuncType&& f)
     }
 }
 
+/**
+ * It's a pipe operator for applying extractor for boost::optional
+ * The next function will be applied if boost::optional is empty
+ * @param op is a boost::optional<T>
+ * @param f is a function that returns a new boost::optional
+ * @return boost::optional
+ *
+ * an example of usage:
+ *
+ *    int value;
+ *    std::cin >> value;
+ *
+ *    auto op = boost::optional<int>(-1)
+ *        // check value
+ *        | [] (int val) -> boost::optional<int>
+ *          {
+ *            return val >= 0 ? boost::optional<int>(val) : boost::none;
+ *          }
+ *        // if it's boost::none
+ *        |= []()
+ *          {
+ *            return 0;
+ *          };
+ *
+ *     if (op)
+ *     {
+ *       std::cout << op.get() << std::endl;
+ *     }
+ *     else
+ *     {
+ *         std::cout << "op is empty" << std::endl;
+ *     }
+ */
 template <class TOptional,
           typename FuncType,
           typename TOptionalParam = typename std::remove_reference_t<TOptional>::value_type,
@@ -156,7 +219,28 @@ boost::optional<TOptionalResult> operator|=(TOptional&& op, FuncType&& f)
 /**
  * It's a pipe operator for applying extractor for boost::optional
  * The next function will be applied if boost::optional is empty
+ * @param op is a boost::optional<T>
+ * @param f is a function that returns a default value
  * @return boost::optional<T>::value_type
+ *
+ * an example of usage:
+ *
+ *    int value;
+ *    std::cin >> value;
+ *
+ *    auto myValue = boost::optional<int>(-1)
+ *        // check value
+ *        | [] (int val) -> boost::optional<int>
+ *          {
+ *            return val >= 0 ? boost::optional<int>(val) : boost::none;
+ *          }
+ *        // if it's boost::none
+ *        <<= []()
+ *          {
+ *            return 0;
+ *          };
+ *
+ *       std::cout << myValue << std::endl;
  */
 template <class TOptional,
           typename FuncType,
@@ -179,7 +263,25 @@ FuncResult operator<<=(TOptional&& op, FuncType&& f)
 /**
  * It's a pipe operator for applying extractor for boost::optional
  * The next function will be applied if boost::optional is empty
+ * @param op is a boost::optional<T>
+ * @param value is a default value
  * @return boost::optional<T>::value_type
+ *
+ * an example of usage:
+ *
+ *    int value;
+ *    std::cin >> value;
+ *
+ *    auto myValue = boost::optional<int>(-1)
+ *        // check value
+ *        | [] (int val) -> boost::optional<int>
+ *          {
+ *            return val >= 0 ? boost::optional<int>(val) : boost::none;
+ *          }
+ *        // if it's boost::none
+ *        <<= 0
+ *
+ *       std::cout << myValue << std::endl;
  */
 template <class TOptional,
           typename ValueType,
