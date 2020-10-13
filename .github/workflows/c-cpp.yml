@@ -13,8 +13,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: prepare
+      run: |
+           pwd
+           echo "/home/runner/.local/bin" >> $GITHUB_PATH
+           ls /home/runner/.local/bin/
+           pip3 install wheel setuptools
+           pip3 install conan
+           conan --version
     - name: configure
-      run: ./configure
+      run: sh ./configure.sh
     - name: make
       run: make
     - name: make check
