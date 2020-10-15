@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.1)
 enable_testing()
 set(BOOST_INCLUDE_DIRS $boost_installation_prefix/include)
 
-SET (CMAKE_CXX_FLAGS "-std=c++2a")
+SET (CMAKE_CXX_FLAGS "-std=c++1z")
 SET (BOOST_OPTIONAL_EXT ${CMAKE_CURRENT_SOURCE_DIR})
 
 message("!!! ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_BINARY_DIR}")
