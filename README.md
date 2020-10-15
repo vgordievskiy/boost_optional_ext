@@ -5,6 +5,8 @@
 Consider a given function:
 
 ```C++
+namespace helper {
+
 template <typename TMapContainer, typename TKey = typename TMapContainer::key_type, typename TValue = typename TMapContainer::mapped_type>
 boost::optional<const TValue&> findInMap(const TMapContainer& container, const TKey& key)
 {
@@ -18,6 +20,8 @@ boost::optional<const TValue&> findInMap(const TMapContainer& container, const T
         return boost::none;
     }
 }
+
+} // end namespace helper
 ```
 
 and a code snippet:
@@ -42,7 +46,6 @@ using TParams = std::map<std::string, std::tuple<StatusType, bool>>;
 
 CheckStatus checkActionIsStarted(const std::string& action, const TParams& data)
 {
-    using namespace ipa::util;
     auto result = helper::find(data, action)
         | [](auto&& el) -> boost::optional<const TParams::mapped_type&> {
             boost::optional<const TParams::mapped_type&> ret = boost::none;
