@@ -7,25 +7,17 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  build-ubuntu:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: prepare
-      run: |
-           pwd
-           echo "/home/runner/.local/bin" >> $GITHUB_PATH
-           ls /home/runner/.local/bin/
-           pip3 install wheel setuptools
-           pip3 install conan
-           conan --version
-    - name: configure
-      run: sh ./configure.sh
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      - uses: actions/checkout@v2
+      - run: cmake --version
+      - run: python --version
+      - name: Install conan
+        run: |
+          pip3 install wheel setuptools
+          pip3 install conan
+      - name: Check conan version
+        run: |
+          export PATH=$PATH:/home/runner/.local/bin
+          conan --version
