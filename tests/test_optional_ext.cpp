@@ -397,5 +397,5 @@ BOOST_AUTO_TEST_CASE(Test_5)
     auto op = boost::make_optional(1) | freeTmplFn<int>;
 
     BOOST_CHECK_EQUAL(op.has_value(), true);
-    BOOST_CHECK_EQUAL(op.get(), "11");
+    BOOST_CHECK_EQUAL(op.get(), "1");
 }
