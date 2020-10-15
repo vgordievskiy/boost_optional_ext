@@ -25,3 +25,7 @@ jobs:
         run: |
           export PATH=$PATH:/home/runner/.local/bin
           ./configure.sh
+      - name: Build
+        run: make 
+        working-directory: Build
+        
