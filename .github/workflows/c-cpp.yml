@@ -21,3 +21,7 @@ jobs:
         run: |
           export PATH=$PATH:/home/runner/.local/bin
           conan --version
+      - name: Configure
+        run: |
+          export PATH=$PATH:/home/runner/.local/bin
+          ./configure.sh
