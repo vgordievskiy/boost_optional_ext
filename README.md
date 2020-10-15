@@ -58,7 +58,7 @@ CheckStatus isActionStarted(const std::string& action, const TParams& data)
         | [](auto&& el) {
             return std::get<1>(el) ? CheckStatus::eOk : CheckStatus::eNotOk;
         };
-    return result.value_or(CheckStatus::eNotProvided);
+    return result <<= CheckStatus::eNotProvided;
 }
 
 void MyClass::Test()
