@@ -28,4 +28,7 @@ jobs:
       - name: Build
         run: make 
         working-directory: Build
+      - name: Run tests
+        run: ./boost_optional_ext
+        working-directory: Build/bin
         
