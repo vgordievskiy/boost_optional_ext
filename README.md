@@ -44,7 +44,7 @@ enum CheckStatus {
 //----------------------|action----|-------|status_type-|-isOk-|
 using TParams = std::map<std::string, std::tuple<StatusType, bool>>;
 
-CheckStatus checkActionIsStarted(const std::string& action, const TParams& data)
+CheckStatus isActionStarted(const std::string& action, const TParams& data)
 {
     auto result = helper::find(data, action)
         | [](auto&& el) -> boost::optional<const TParams::mapped_type&> {
@@ -63,17 +63,17 @@ CheckStatus checkActionIsStarted(const std::string& action, const TParams& data)
 
 void MyClass::Test()
 {
-  TParams actionResults = {
+  TParams actionsResults = {
       {"xyz-1", std::make_tuple(StatusType::eFinished, false)},
       {"xyz-2", std::make_tuple(StatusType::eStarted, true)},
       {"xyz-3", std::make_tuple(StatusType::eInProgress, false)},
       {"xyz-4", std::make_tuple(StatusType::eFinished, true)}
   };
 
-  std::cout << "xyz-1: " << (checkActionIsStarted("xyz-1", actionResults) == CheckStatus::eOk) << std::endl;
-  std::cout << "xyz-2: " << (checkActionIsStarted("xyz-2", actionResults) == CheckStatus::eOk) << std::endl;
-  std::cout << "xyz-3: " << (checkActionIsStarted("xyz-3", actionResults) == CheckStatus::eOk) << std::endl;
-  std::cout << "xyz-4: " << (checkActionIsStarted("xyz-4", actionResults) == CheckStatus::eOk) << std::endl;
+  std::cout << "xyz-1: " << (isActionStarted("xyz-1", actionsResults) == CheckStatus::eOk) << std::endl;
+  std::cout << "xyz-2: " << (isActionStarted("xyz-2", actionsResults) == CheckStatus::eOk) << std::endl;
+  std::cout << "xyz-3: " << (isActionStarted("xyz-3", actionsResults) == CheckStatus::eOk) << std::endl;
+  std::cout << "xyz-4: " << (isActionStarted("xyz-4", actionsResults) == CheckStatus::eOk) << std::endl;
 }
 
 ```
