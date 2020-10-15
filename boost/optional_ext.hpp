@@ -126,15 +126,7 @@ boost::optional<TOptionalResult> operator|(TOptional&& op, FuncType&& f)
 {
     if (op)
     {
-        auto ret = f(op.get());
-        if (ret)
-        {
-            return boost::optional<TOptionalResult>(std::move(ret));
-        }
-        else
-        {
-            return boost::none;
-        }
+        return f(op.get());
     }
     else
     {
