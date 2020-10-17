@@ -29,6 +29,6 @@ jobs:
         run: make 
         working-directory: Build
       - name: Run tests
-        run: ./boost_optional_ext
+        run: ./boost_optional_ext --log_level=message
         working-directory: Build/bin
         

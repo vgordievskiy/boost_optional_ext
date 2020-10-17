@@ -1,3 +1,4 @@
+#include <boost/test/unit_test.hpp>
 
 #include <boost/optional.hpp>
 #include <boost/optional_ext.hpp>
@@ -10,9 +11,7 @@
 #include <tuple>
 #include <iostream>
 
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
-using namespace boost::unit_test;
+BOOST_AUTO_TEST_SUITE( base_cases )
 
 /**
  * used short names:
@@ -320,7 +319,7 @@ BOOST_AUTO_TEST_CASE(Test_convert_int_to_str_with_default_value_from_value)
     BOOST_CHECK_EQUAL(lv_value, std::numeric_limits<int>::max());
 }
 
-BOOST_AUTO_TEST_CASE(Test_1)
+BOOST_AUTO_TEST_CASE(Test_std_function)
 {
     std::function<int(const int)> stdFun = [](const int el) { return el * 0; };
 
@@ -335,7 +334,7 @@ int freeFn(const int el)
     return el * 0;
 }
 
-BOOST_AUTO_TEST_CASE(Test_2)
+BOOST_AUTO_TEST_CASE(Test_free_fn)
 {
     auto op = boost::make_optional(1000) | freeFn;
 
@@ -343,7 +342,7 @@ BOOST_AUTO_TEST_CASE(Test_2)
     BOOST_CHECK_EQUAL(op.get(), 0);
 }
 
-BOOST_AUTO_TEST_CASE(Test_3)
+BOOST_AUTO_TEST_CASE(Test_std_bind)
 {
     class TestClass
     {
@@ -369,7 +368,7 @@ BOOST_AUTO_TEST_CASE(Test_3)
     BOOST_CHECK_EQUAL(op.get(), 10);
 }
 
-BOOST_AUTO_TEST_CASE(Test_4)
+BOOST_AUTO_TEST_CASE(Test_static_method)
 {
     class TestClass
     {
@@ -392,10 +391,12 @@ std::string freeTmplFn(const T& el)
     return std::to_string(el);
 }
 
-BOOST_AUTO_TEST_CASE(Test_5)
+BOOST_AUTO_TEST_CASE(Test_template_fn_with_instantiation)
 {
     auto op = boost::make_optional(1) | freeTmplFn<int>;
 
     BOOST_CHECK_EQUAL(op.has_value(), true);
     BOOST_CHECK_EQUAL(op.get(), "1");
 }
+
+BOOST_AUTO_TEST_SUITE_END()
