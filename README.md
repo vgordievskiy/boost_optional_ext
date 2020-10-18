@@ -1,6 +1,6 @@
 # boost_optional_ext
-## It is a pipe operator for the boost::optional
-   it gives you a way to write your code in FP manner.
+### It is a pipe operator for the boost::optional
+### it gives you a way to write your code in FP manner.
 
 # Sample
 
