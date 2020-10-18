@@ -90,6 +90,23 @@ void DataConsumer::startDataHandler(service::IDataProvider& provider)
             std::cout << "New Value accepted: " << el << std::endl;
         };
 
+        /* In an old manner it would be look like this:
+            try {
+                auto value = boost::lexical_cast<double>(data);
+                print(value);
+                if (value >= 0 && value <= 50)
+                {
+                    std::cout << "New Value accepted: " << value << std::endl;
+                    acc += value;
+                }
+            }
+            catch (const boost::bad_lexical_cast& exc)
+            {
+                std::cerr << exc.what() << std::endl;
+                errors += 1;
+            };
+        */
+
         // it's an example of usage boost_optional_ext
         acc += toOp(data)
                  | toDouble
