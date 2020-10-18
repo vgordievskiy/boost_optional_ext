@@ -20,14 +20,14 @@ namespace services
 
     IDataProvider::Connection CDefDataProvider::onNewData(const FNewDataHandler& handler)
     {
-        return m_newPriceReady.connect(handler);
+        return m_newDataReady.connect(handler);
     }
 
-    void CDefDataProvider::setNewData(const Data& price)
+    void CDefDataProvider::setNewData(const Data& data)
     {
-        if (!m_newPriceReady.empty())
+        if (!m_newDataReady.empty())
         {
-            m_newPriceReady(price);
+            m_newDataReady(data);
         }
     }
 

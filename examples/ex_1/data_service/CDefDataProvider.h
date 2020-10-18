@@ -23,10 +23,10 @@ class CDefDataProvider: public IDataProvider, boost::noncopyable
     Connection onNewData(const FNewDataHandler& handler) override;
 
     private:
-    void setNewData(const Data& price);
+    void setNewData(const Data& data);
 
     private:
-    boost::signals2::signal<IDataProvider::FNewData> m_newPriceReady;
+    boost::signals2::signal<IDataProvider::FNewData> m_newDataReady;
 
     std::atomic<bool> m_isStopped{true};
     std::thread m_worker;
