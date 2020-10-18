@@ -1,5 +1,6 @@
 #include "data_service/CDefDataProvider.h"
 #include <stdio.h>
+#include <iterator>
 #include <iostream>
 
 #include <boost/optional.hpp>
@@ -45,7 +46,10 @@ int main()
     double acc = 0.0;
     uint32_t errors = 0;
 
-    provider.onNewData([&acc, &errors, &provider](const services::IDataProvider::Data& data) mutable {
+    std::list<double> items;
+    auto bi = std::back_inserter(items);
+
+    provider.onNewData([&acc, &errors, &bi, &provider](const services::IDataProvider::Data& data) mutable {
 
         auto errorHandler = [&errors] () mutable {
             std::cout << "a wrong data recieved" << std::endl;
@@ -54,7 +58,8 @@ int main()
 
         auto filter = [] (auto&& el) { return el >= 0 && el <= 50; };
 
-        auto log = [] (auto&& el) {
+        auto accept = [&bi] (auto&& el) mutable {
+            *bi = el;
             std::cout << "New Value accepted: " << el << std::endl;
         };
 
@@ -79,7 +84,7 @@ int main()
                  | toDouble
                  | hof::match(print<double>, errorHandler)
                  | hof::filter_if(filter)
-                 | hof::match_some(log)
+                 | hof::match_some(accept)
                  <<= 0;
 
         std::cout << "----step-----ACC-[" << acc << "] " << std::endl;
@@ -95,6 +100,14 @@ int main()
     provider.wait();
 
     std::cout << "Final Acc: [" << acc << "], Errors: " << errors << std::endl;
+    std::cout << "Elements are: ";
+    auto check = 0;
+    for (const auto& el: items)
+    {
+        check += el;
+        std::cout << el << ", ";
+    }
+    std::cout << std::endl << " Sum is " << check << std::endl;
 
     return 0;
 }
