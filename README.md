@@ -34,11 +34,11 @@ namespace services
 Conditions:
 
 * a new data comes as the std::string
-* a new data is textual representation of floating point type with sign.
-* the data may has an error (it isn't a correct representation of floating point type)
+* a new data is a textual representation of floating-point type with the sign.
+* the data may have an error (it isn't a correct representation of floating-point type)
 * it's required to sum all numbers are satisfying criterion: num > 0 and num < 50
 * it's required to sum a count of errors.
-* criterion of stop: the sum >= 100.
+* The criterion of stop: the sum >= 100.
 
 The following code snippet implements described above.
 
