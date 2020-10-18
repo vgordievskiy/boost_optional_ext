@@ -1,88 +1,123 @@
-# boost_optional_ext is a pipe operator for the boost::optional
+# boost_optional_ext
+### It is a pipe operator for the boost::optional
+### it gives you a way to write your code in an FP manner.
 
-# Examples
+# Sample
 
-Consider a given function:
+Consider a given interface:
 
 ```C++
-namespace helper {
-
-template <typename TMapContainer, typename TKey = typename TMapContainer::key_type, typename TValue = typename TMapContainer::mapped_type>
-boost::optional<const TValue&> findInMap(const TMapContainer& container, const TKey& key)
+namespace services
 {
-    auto foundIt = container.find(key);
-    if (foundIt != container.cend())
+    class IDataProvider
     {
-        return boost::optional<const TValue&>(foundIt->second);
+        public:
+
+        using Data = std::string;
+
+        using Connection = boost::signals2::connection;
+        using FNewData = void(const Data&);
+        using FNewDataHandler = std::function<FNewData>;
+
+        virtual ~IDataProvider() = default;
+
+        virtual void start() = 0;
+        virtual void stop() = 0;
+        virtual void wait() = 0;
+
+        virtual Connection onNewData(const FNewDataHandler& handler) = 0;
+
+    };
+} // end namespace service
+```
+
+Conditions:
+
+* a new data comes as the std::string
+* a new data is a textual representation of floating-point type with the sign.
+* the data may have an error (it isn't a correct representation of floating-point type)
+* it's required to sum all numbers are satisfying criterion: num > 0 and num < 50
+* it's required to sum a count of errors.
+* The criterion of stop: the sum >= 100.
+
+The following code snippet implements described above.
+
+```C++
+
+namespace {
+
+template<typename T>
+boost::optional<const T&> toOp(const T& value)
+{
+    return value;
+}
+
+template<typename T>
+boost::optional<T&> toOp(T& value)
+{
+    return value;
+}
+
+boost::optional<double> toDouble(const std::string& value)
+{
+    try {
+        return boost::lexical_cast<double>(value);
     }
-    else
+    catch (const boost::bad_lexical_cast& exc)
     {
+        std::cerr << exc.what() << std::endl;
         return boost::none;
     }
 }
 
-} // end namespace helper
-```
+} // end namespace
 
-and a code snippet:
-
-```C++
-enum StatusType {
-    eStarted = 0,
-    eInProgress,
-    eFinished,
-    eStatusTypeEnd
-};
-
-enum CheckStatus {
-    eOk = 0,
-    eNotOk,
-    eNotProvided,
-    eCheckStatusEnd
-};
-
-//----------------------|action----|-------|status_type-|-isOk-|
-using TParams = std::map<std::string, std::tuple<StatusType, bool>>;
-
-CheckStatus isActionStarted(const std::string& action, const TParams& data)
+void DataConsumer::startDataHandler(service::IDataProvider& provider)
 {
-    auto result = helper::find(data, action)
-        | [](auto&& el) -> boost::optional<const TParams::mapped_type&> {
-            boost::optional<const TParams::mapped_type&> ret = boost::none;
-            if (std::get<0>(el) == StatusType::eStarted)
-            {
-                ret = el;
-            }
-            return ret;
-        }
-        | [](auto&& el) {
-            return std::get<1>(el) ? CheckStatus::eOk : CheckStatus::eNotOk;
+    double acc = 0.0;
+    uint32_t errors = 0;
+
+    provider.onNewData([&acc, &errors, &provider](const services::IDataProvider::Data& data) mutable {
+
+        auto errorHandler = [&errors] () mutable {
+            std::cout << "a wrong data recieved" << std::endl;
+            errors += 1;
         };
-    return result <<= CheckStatus::eNotProvided;
+
+        auto filter = [] (auto&& el) { return el >= 0 && el <= 50; };
+
+        auto log = [] (auto&& el) {
+            std::cout << "New Value accepted: " << el << std::endl;
+        };
+
+        // it's an example of usage boost_optional_ext
+        acc += toOp(data)
+                 | toDouble
+                 | hof::match(print<double>, errorHandler)
+                 | hof::filter_if(filter)
+                 | hof::match_some(log)
+                 <<= 0;
+
+        std::cout << "----step-----ACC-[" << acc << "] " << std::endl;
+
+        if (acc >= 100)
+        {
+            provider.stop();
+        }
+    });
+
+    provider.start();
+    provider.wait();
+
+    std::cout << "Final Acc: [" << acc << "], Errors: " << errors << std::endl;
+
 }
 
-void MyClass::Test()
-{
-  TParams actionsResults = {
-      {"xyz-1", std::make_tuple(StatusType::eFinished, false)},
-      {"xyz-2", std::make_tuple(StatusType::eStarted, true)},
-      {"xyz-3", std::make_tuple(StatusType::eInProgress, false)},
-      {"xyz-4", std::make_tuple(StatusType::eFinished, true)}
-  };
-
-  std::cout << "xyz-1: " << (isActionStarted("xyz-1", actionsResults) == CheckStatus::eOk) << std::endl;
-  std::cout << "xyz-2: " << (isActionStarted("xyz-2", actionsResults) == CheckStatus::eOk) << std::endl;
-  std::cout << "xyz-3: " << (isActionStarted("xyz-3", actionsResults) == CheckStatus::eOk) << std::endl;
-  std::cout << "xyz-4: " << (isActionStarted("xyz-4", actionsResults) == CheckStatus::eOk) << std::endl;
-}
-
-```
-## Output is
-
-```
-xyz-1: 0
-xyz-2: 1
-xyz-3: 0
-xyz-4: 0
 ```
 
+# How to configure and build example and tests
+
+1. run ./configure.sh
+2. run ./build.sh
+
+   The build artifacts are in ./Build/bin 
