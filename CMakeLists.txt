@@ -18,12 +18,21 @@ SET (TEST_SRC
         tests/tests_main.cpp
 )
 
-# creates the executable
 add_executable(boost_optional_ext ${TEST_SRC})
 target_link_libraries(boost_optional_ext CONAN_PKG::boost)
-
-# indicates the include paths
 target_include_directories(boost_optional_ext
+    PRIVATE
+    ${BOOST_INCLUDE_DIRS}
+    ${BOOST_OPTIONAL_EXT})
+
+SET (EXAMPLE_SRC
+        examples/ex_1/data_service/CDefDataProvider.cpp
+        examples/ex_1/main.cpp
+)
+
+add_executable(boost_optional_ext_example ${EXAMPLE_SRC})
+target_link_libraries(boost_optional_ext_example CONAN_PKG::boost)
+target_include_directories(boost_optional_ext_example
     PRIVATE
     ${BOOST_INCLUDE_DIRS}
     ${BOOST_OPTIONAL_EXT})

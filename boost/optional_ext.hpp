@@ -625,7 +625,7 @@ decltype(auto) match_none(TFunctor&& fn)
         {
             if (!op)
             {
-                none(op.get());
+                none();
             }
 
             return op;
