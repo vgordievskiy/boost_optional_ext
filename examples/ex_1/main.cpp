@@ -1,5 +1,6 @@
 #include "data_service/CDefDataProvider.h"
 #include <stdio.h>
+#include <chrono>
 #include <iterator>
 #include <iostream>
 
@@ -20,7 +21,7 @@ boost::optional<T&> toOp(T& value)
     return value;
 }
 
-boost::optional<double> toDouble(const std::string& value)
+boost::optional<double> toDouble(const std::string& value) noexcept
 {
     try {
         return boost::lexical_cast<double>(value);
@@ -33,7 +34,7 @@ boost::optional<double> toDouble(const std::string& value)
 }
 
 template<typename T>
-void print(const T& value)
+void print(const T& value) noexcept
 {
     std::cout << "new value from provider: " << value << std::endl;
 }
@@ -46,30 +47,36 @@ int main()
     double acc = 0.0;
     uint32_t errors = 0;
 
+    uint32_t avarageTime = 0;
+    uint16_t count = 0;
     std::list<double> items;
     auto bi = std::back_inserter(items);
 
-    provider.onNewData([&acc, &errors, &bi, &provider](const services::IDataProvider::Data& data) mutable {
+    provider.onNewData([&avarageTime, &count, &acc, &errors, &bi, &provider](const services::IDataProvider::Data& data) mutable {
 
-        auto errorHandler = [&errors] () mutable {
+        auto errorHandler = [&errors] () mutable noexcept {
             std::cout << "a wrong data recieved" << std::endl;
             errors += 1;
         };
 
-        auto filter = [] (auto&& el) { return el >= 0 && el <= 50; };
+        auto filter = [] (auto&& el) noexcept { return el >= 0 && el <= 50; };
 
-        auto accept = [&bi] (auto&& el) mutable {
+        auto accept = [&bi] (auto&& el) mutable noexcept {
             *bi = el;
             std::cout << "New Value accepted: " << el << std::endl;
         };
 
-        /* In an old manner it would be look like this:
+        auto start = std::chrono::high_resolution_clock::now(); 
+
+        // In an old manner it would be look like this:
+        /*
             try {
                 auto value = boost::lexical_cast<double>(data);
                 print(value);
                 if (value >= 0 && value <= 50)
                 {
                     std::cout << "New Value accepted: " << value << std::endl;
+                    *bi = value;
                     acc += value;
                 }
             }
@@ -87,7 +94,13 @@ int main()
                  | hof::match_some(accept)
                  <<= 0;
 
-        std::cout << "----step-----ACC-[" << acc << "] " << std::endl;
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+        count += 1;
+        avarageTime += duration.count();
+
+        std::cout << "----step-----ACC-[" << acc << "] avarageTime: " << avarageTime / count << " microseconds " << std::endl;
 
         if (acc >= 100)
         {
