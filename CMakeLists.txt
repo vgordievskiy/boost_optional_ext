@@ -5,7 +5,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(BOOST_INCLUDE_DIRS $boost_installation_prefix/include)
 
 SET (CMAKE_CXX_FLAGS "-std=c++1z")
-add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
 SET (BOOST_OPTIONAL_EXT ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/Build/conanbuildinfo.cmake)
@@ -36,11 +35,12 @@ target_include_directories(boost_optional_ext_example
     PRIVATE
     ${BOOST_INCLUDE_DIRS}
     ${BOOST_OPTIONAL_EXT})
-
+    
 if(MSVC)
   target_compile_options(boost_optional_ext PRIVATE /WAll /WX)
   target_compile_options(boost_optional_ext_example PRIVATE /WAll /WX)
 else()
+  add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
   target_compile_options(boost_optional_ext PRIVATE -Wall -Wextra -pedantic -Werror)
   target_compile_options(boost_optional_ext_example PRIVATE -Wall -Wextra -pedantic -Werror)
-endif()
+endif()    
