@@ -111,11 +111,18 @@ using is_operator_applicable = is_optional_type<TOptional>;
 template <typename F>
 struct THigherOrderFunction : F
 {
+    using TFunctor = F;
     constexpr THigherOrderFunction(F&& f) noexcept(noexcept(F{std::forward<F>(f)}))
         : F{std::forward<F>(f)}
     {
     }
 };
+
+template <typename TFunc>
+static decltype(auto) createHof(TFunc&& f)
+{
+    return THigherOrderFunction<TFunc>(std::forward<TFunc>(f));
+}
 
 template <typename T>
 struct is_higher_order_function : public boost::false_type
@@ -285,8 +292,7 @@ template <typename TOptional,
           typename boost::enable_if_c<deducer::is_map_like, int>::type = 0,
           typename boost::enable_if_c<!deducer::has_higher_order_functon, int>::type = 0>
 // clang-format on
-inline boost::optional<deduced_result> operator|(TOptional&& op, Functor&& f)
-    noexcept(noexcept(f(op.get())))
+inline boost::optional<deduced_result> operator|(TOptional&& op, Functor&& f) noexcept(noexcept(f(op.get())))
 {
     if (op)
     {
@@ -340,8 +346,7 @@ template <typename TOptional,
           typename boost::enable_if_c<deducer::is_flat_map_like, int>::type = 1,
           typename boost::enable_if_c<!deducer::has_higher_order_functon, int>::type = 0>
 // clang-format on
-inline boost::optional<deduced_result> operator|(TOptional&& op, Functor&& f)
-    noexcept(noexcept(f(op.get())))
+inline boost::optional<deduced_result> operator|(TOptional&& op, Functor&& f) noexcept(noexcept(f(op.get())))
 {
     if (op)
     {
@@ -389,8 +394,7 @@ template <typename TOptional,
           typename boost::enable_if_c<deducer::is_flat_map_like, int>::type = 1,
           typename boost::enable_if_c<deducer::has_higher_order_functon, int>::type = 1>
 // clang-format on
-inline decltype(auto) operator|(TOptional&& op, Functor&& f)
-    noexcept(noexcept(f(std::forward<TOptional>(op))))
+inline decltype(auto) operator|(TOptional&& op, Functor&& f) noexcept(noexcept(f(std::forward<TOptional>(op))))
 {
     return f(std::forward<TOptional>(op));
 }
@@ -433,12 +437,11 @@ template <typename TOptional,
           typename deducer = optional_detail::TOptinalNoneTypes<TOptional, Functor, type_traits::argument_type_t<Functor>, optional_detail::is_operator_applicable<TOptional>::value>,
           typename deduced_result = typename deducer::deduced_result,
           typename boost::enable_if_c<deducer::is_applicable, int>::type = 0>
-inline boost::optional<deduced_result> operator|=(TOptional&& op, Functor&& f)
-    noexcept(noexcept(f()))
+inline boost::optional<deduced_result> operator|=(TOptional&& op, Functor&& f) noexcept(noexcept(f()))
 {
     if (op)
     {
-        return op;
+        return std::forward<decltype(op)>(op);
     }
     else
     {
@@ -478,8 +481,7 @@ template <typename TOptional,
           typename deduced_result = typename deducer::invoc_result,
           typename boost::enable_if_c<deducer::is_applicable, int>::type = 0,
           typename boost::enable_if_c<deducer::is_arg_callable, int>::type = 0>
-inline deduced_result operator<<=(TOptional&& op, Functor&& f)
-    noexcept(noexcept(f()))
+inline deduced_result operator<<=(TOptional&& op, Functor&& f) noexcept(noexcept(f()))
 {
     if (op)
     {
@@ -520,8 +522,7 @@ template <typename TOptional,
           typename deduced_result = typename deducer::invoc_result,
           typename boost::enable_if_c<deducer::is_applicable, int>::type = 0,
           typename boost::enable_if_c<!deducer::is_arg_callable, int>::type = 1>
-inline ValueType operator<<=(TOptional&& op, ValueType&& value)
-    noexcept(true)
+inline ValueType operator<<=(TOptional&& op, ValueType&& value) noexcept(true)
 {
     if (op)
     {
@@ -534,75 +535,71 @@ inline ValueType operator<<=(TOptional&& op, ValueType&& value)
 }
 
 
-template<typename T>
-typename boost::optional<typename boost::optional<T>::reference_const_type> toRefOp(const boost::optional<T>& op)
-    noexcept(noexcept(op.get))
+template <typename T>
+typename boost::optional<typename boost::optional<T>::reference_const_type> toRefOp(const boost::optional<T>& op) noexcept(noexcept(op.get))
 {
     return op.get();
 }
 
-template<typename T>
-typename boost::optional<typename boost::optional<T>::reference_type> toRefOp(boost::optional<T>& op)
-    noexcept(noexcept(op.get))
+template <typename T>
+typename boost::optional<typename boost::optional<T>::reference_type> toRefOp(boost::optional<T>& op) noexcept(noexcept(op.get))
 {
     return op.get();
 }
-
 
 namespace hof {
-namespace {
-void emptyNone(){}
 
-} // namespace
-
+// clang-format off
 template <typename TPred>
-inline decltype(auto) filter_if(TPred&& pred)
-    noexcept(std::is_nothrow_copy_constructible<TPred>::value || std::is_nothrow_move_constructible<TPred>::value)
+inline decltype(auto) filter_if(TPred&& pred) noexcept(std::is_nothrow_copy_constructible<TPred>::value || std::is_nothrow_move_constructible<TPred>::value)
 {
-    return optional_detail::THigherOrderFunction(
-        [pred = std::forward<TPred>(pred)](auto&& op) mutable
-            noexcept(noexcept(pred(op.get())))
+    return optional_detail::createHof(
+        [pred = std::forward<TPred>(pred)](auto&& op) mutable noexcept(noexcept(pred(op.get())))
         {
+            using TRes = typename std::remove_reference<decltype(op)>::type;
             if (op)
             {
                 if (pred(op.get()))
                 {
-                    return op;
+                    return std::forward<decltype(op)>(op);
                 }
             }
 
-            return decltype(op)(boost::none);
+            return TRes(boost::none);
         });
 }
+// clang-format on
 
+// clang-format off
 template <typename TPred>
 inline decltype(auto) filter_if_not(TPred&& pred)
     noexcept(std::is_nothrow_copy_constructible<TPred>::value || std::is_nothrow_move_constructible<TPred>::value)
 {
-    return optional_detail::THigherOrderFunction(
+    return optional_detail::createHof(
         [pred = std::forward<TPred>(pred)](auto&& op) mutable
             noexcept(noexcept(pred(op.get())))
         {
+            using TRes = typename std::remove_reference<decltype(op)>::type;
             if (op)
             {
                 if (!pred(op.get()))
                 {
-                    return op;
+                    return std::forward<decltype(op)>(op);
                 }
             }
 
-            return decltype(op)(boost::none);
+            return TRes(boost::none);
         });
 }
+// clang-format on
 
+// clang-format off
 template <typename TSome, typename TNone = void()>
-inline decltype(auto) match(TSome&& some, TNone&& none = emptyNone)
-    noexcept(
-        (std::is_nothrow_copy_constructible<TSome>::value || std::is_nothrow_move_constructible<TSome>::value)
-        && (std::is_nothrow_copy_constructible<TNone>::value || std::is_nothrow_move_constructible<TNone>::value)
-    )
+inline decltype(auto) match(TSome&& some, TNone&& none)
+    noexcept((std::is_nothrow_copy_constructible<TSome>::value || std::is_nothrow_move_constructible<TSome>::value)
+                && (std::is_nothrow_copy_constructible<TNone>::value || std::is_nothrow_move_constructible<TNone>::value))
 {
-    return optional_detail::THigherOrderFunction(
+    return optional_detail::createHof(
         [some = std::forward<TSome>(some), none = std::forward<TNone>(none)](auto&& op) mutable
             noexcept(noexcept(some(op.get())) && noexcept(none()))
         {
@@ -615,43 +612,48 @@ inline decltype(auto) match(TSome&& some, TNone&& none = emptyNone)
                 none();
             }
 
-            return op;
+            return std::forward<decltype(op)>(op);
         });
 }
+// clang-format on
 
+// clang-format off
 template <typename TFunctor>
-inline decltype(auto) match_some(TFunctor&& fn)
+inline decltype(auto) match_some(TFunctor&& some)
     noexcept(std::is_nothrow_copy_constructible<TFunctor>::value || std::is_nothrow_move_constructible<TFunctor>::value)
 {
-    return optional_detail::THigherOrderFunction(
-        [some = std::forward<TFunctor>(fn)](auto&& op) mutable
-            noexcept(noexcept(fn(op.get())))
+    return optional_detail::createHof(
+        [some = std::forward<TFunctor>(some)](auto&& op) mutable
+            noexcept(noexcept(some(op.get())))
         {
             if (op)
             {
                 some(op.get());
             }
 
-            return op;
+            return std::forward<decltype(op)>(op);
         });
 }
+// clang-format on
 
+// clang-format off
 template <typename TFunctor>
-inline decltype(auto) match_none(TFunctor&& fn)
+inline decltype(auto) match_none(TFunctor&& none)
     noexcept(std::is_nothrow_copy_constructible<TFunctor>::value || std::is_nothrow_move_constructible<TFunctor>::value)
 {
-    return optional_detail::THigherOrderFunction(
-        [none = std::forward<TFunctor>(fn)](auto&& op) mutable
-            noexcept(noexcept(fn()))
+    return optional_detail::createHof(
+        [none = std::forward<TFunctor>(none)](auto&& op) mutable
+            noexcept(noexcept(none()))
         {
             if (!op)
             {
                 none();
             }
 
-            return op;
+            return std::forward<decltype(op)>(op);
         });
 }
+// clang-format on
 
 
-} // namespace op
+} // namespace hof
