@@ -38,7 +38,7 @@ target_include_directories(boost_optional_ext_example
     ${BOOST_OPTIONAL_EXT})
     
 if(MSVC)
-  add_compile_options("-W" "-Wall" "-DDEBUG" "MD")
+  add_compile_options("-W" "-Wall" "-DDEBUG" "MT")
 else()
   add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
 endif()    
