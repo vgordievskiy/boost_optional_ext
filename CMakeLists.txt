@@ -36,3 +36,11 @@ target_include_directories(boost_optional_ext_example
     PRIVATE
     ${BOOST_INCLUDE_DIRS}
     ${BOOST_OPTIONAL_EXT})
+
+if(MSVC)
+  target_compile_options(boost_optional_ext PRIVATE /WAll /WX)
+  target_compile_options(boost_optional_ext_example PRIVATE /WAll /WX)
+else()
+  target_compile_options(boost_optional_ext PRIVATE -Wall -Wextra -pedantic -Werror)
+  target_compile_options(boost_optional_ext_example PRIVATE -Wall -Wextra -pedantic -Werror)
+endif()
