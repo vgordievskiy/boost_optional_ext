@@ -31,4 +31,20 @@ jobs:
       - name: Run tests
         run: ./boost_optional_ext --log_level=message
         working-directory: Build/bin
-        
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cmake --version
+      - run: python --version
+      - name: Install conan
+        run: |
+          pip3 install wheel setuptools
+          pip3 install conan
+      - name: conan install dependencies Windows
+        run: |
+          conan install .. --build missing
+      - name: Build conan package
+        run: |
+          export PATH=$PATH:/home/runner/.local/bin
+        shell: bash 
