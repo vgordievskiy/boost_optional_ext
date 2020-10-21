@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(case_match_some)
 
     auto res = toRefOp(op)
      | hof::filter_if(isPositive)
-     | hof::match(log)
+     | hof::match_some(log)
     ;
 
     BOOST_CHECK_EQUAL(res.has_value(), true);
