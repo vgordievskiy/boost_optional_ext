@@ -4,6 +4,8 @@ enable_testing()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(BOOST_INCLUDE_DIRS $boost_installation_prefix/include)
 
+set(CMAKE_CXX_STANDARD 17)
+
 SET (BOOST_OPTIONAL_EXT ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/Build/conanbuildinfo.cmake)
@@ -36,7 +38,7 @@ target_include_directories(boost_optional_ext_example
     ${BOOST_OPTIONAL_EXT})
     
 if(MSVC)
-  add_compile_options("std:c++17" "-W" "-Wall")
+  add_compile_options("-W" "-Wall")
 else()
-  add_compile_options("-std=c++1z" "-W" "-Wall" "-O0" "-g" "-pedantic")
+  add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
 endif()    
