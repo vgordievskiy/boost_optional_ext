@@ -47,5 +47,5 @@ jobs:
       - name: Build conan package
         run: |
           export PATH=$PATH:/home/runner/.local/bin
-          ./configure.sh
+          ./configure-win.sh
         shell: bash 
