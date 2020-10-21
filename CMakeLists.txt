@@ -38,7 +38,7 @@ target_include_directories(boost_optional_ext_example
     ${BOOST_OPTIONAL_EXT})
     
 if(MSVC)
-  add_compile_options("-W" "-Wall" "MDd" "D_DEBUG")
+  add_compile_options("-W" "-Wall" "MDd" "D_ITERATOR_DEBUG_LEVEL=0")
 else()
   add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
 endif()    
