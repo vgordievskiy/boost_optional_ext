@@ -43,7 +43,7 @@ jobs:
           pip3 install conan
       - name: conan install dependencies Windows
         run: |
-          conan install .. --build missing
+          conan install . --build missing
       - name: Build conan package
         run: |
           export PATH=$PATH:/home/runner/.local/bin
