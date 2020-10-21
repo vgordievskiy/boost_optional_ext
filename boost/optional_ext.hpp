@@ -98,6 +98,11 @@ struct is_optional_type<boost::optional<T>&> : public boost::true_type
 {
 };
 
+template <typename T>
+struct is_optional_type<boost::optional<T>&&> : public boost::true_type
+{
+};
+
 template <class TOptional>
 using optional_value_type_t = typename optional_detail::optional_value_type<TOptional>::type;
 
@@ -594,7 +599,7 @@ inline decltype(auto) filter_if_not(TPred&& pred)
 // clang-format on
 
 // clang-format off
-template <typename TSome, typename TNone = void()>
+template <typename TSome, typename TNone>
 inline decltype(auto) match(TSome&& some, TNone&& none)
     noexcept((std::is_nothrow_copy_constructible<TSome>::value || std::is_nothrow_move_constructible<TSome>::value)
                 && (std::is_nothrow_copy_constructible<TNone>::value || std::is_nothrow_move_constructible<TNone>::value))
@@ -602,6 +607,7 @@ inline decltype(auto) match(TSome&& some, TNone&& none)
     return optional_detail::createHof(
         [some = std::forward<TSome>(some), none = std::forward<TNone>(none)](auto&& op) mutable
             noexcept(noexcept(some(op.get())) && noexcept(none()))
+            -> decltype(auto)
         {
             if (op)
             {
@@ -625,6 +631,7 @@ inline decltype(auto) match_some(TFunctor&& some)
     return optional_detail::createHof(
         [some = std::forward<TFunctor>(some)](auto&& op) mutable
             noexcept(noexcept(some(op.get())))
+            -> decltype(auto)
         {
             if (op)
             {
@@ -644,6 +651,7 @@ inline decltype(auto) match_none(TFunctor&& none)
     return optional_detail::createHof(
         [none = std::forward<TFunctor>(none)](auto&& op) mutable
             noexcept(noexcept(none()))
+            -> decltype(auto)
         {
             if (!op)
             {
