@@ -51,6 +51,5 @@ jobs:
         shell: bash 
       - name: Build
         run: |
-          cmake --build ./bin
-        working-directory: Build
+          cmake --build ./Build
         shell: bash
