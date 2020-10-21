@@ -289,7 +289,7 @@ BOOST_AUTO_TEST_CASE(Test_convert_int_to_str_with_default_value_from_function)
         {
             return boost::make_optional<int>(std::stoi(el));
         }
-        catch (const std::exception& exc)
+        catch (const std::exception&)
         {
             return boost::optional<int>(boost::none);
         }
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE(Test_convert_int_to_str_with_default_value_from_value)
         {
             return boost::make_optional<int>(std::stoi(el));
         }
-        catch (const std::exception& exc)
+        catch (const std::exception&)
         {
             return boost::optional<int>(boost::none);
         }
