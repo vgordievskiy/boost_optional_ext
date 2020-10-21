@@ -541,13 +541,13 @@ inline ValueType operator<<=(TOptional&& op, ValueType&& value) noexcept(true)
 
 
 template <typename T>
-typename boost::optional<typename boost::optional<T>::reference_const_type> toRefOp(const boost::optional<T>& op) noexcept(noexcept(op.get))
+typename boost::optional<typename boost::optional<T>::reference_const_type> toRefOp(const boost::optional<T>& op) noexcept(noexcept(op.get()))
 {
     return op.get();
 }
 
 template <typename T>
-typename boost::optional<typename boost::optional<T>::reference_type> toRefOp(boost::optional<T>& op) noexcept(noexcept(op.get))
+typename boost::optional<typename boost::optional<T>::reference_type> toRefOp(boost::optional<T>& op) noexcept(noexcept(op.get()))
 {
     return op.get();
 }
