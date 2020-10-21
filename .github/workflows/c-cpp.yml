@@ -51,5 +51,5 @@ jobs:
         shell: bash 
       - name: Build
         run: |
-          cmake --build ./Build
+          cmake --build ./Build --config Debug
         shell: bash
