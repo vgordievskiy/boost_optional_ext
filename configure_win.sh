@@ -1,3 +1,3 @@
 #!/bin/bash
-conan install conanfile.txt -if Build --build=missing
+conan install conanfile.txt -s compiler.runtime=MDd -if Build --build=missing
 cmake -BBuild .
