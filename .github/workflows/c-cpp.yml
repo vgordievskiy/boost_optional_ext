@@ -44,8 +44,13 @@ jobs:
       - name: conan install dependencies Windows
         run: |
           conan install . --build missing
-      - name: Build conan package
+      - name: Configure
         run: |
           export PATH=$PATH:/home/runner/.local/bin
           ./configure_win.sh
         shell: bash 
+      - name: Build
+        run: |
+          nmake
+        working-directory: Build
+        shell: bash
