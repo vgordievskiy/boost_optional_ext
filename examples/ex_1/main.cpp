@@ -47,7 +47,7 @@ int main()
     double acc = 0.0;
     uint32_t errors = 0;
 
-    uint32_t avarageTime = 0;
+    uint64_t avarageTime = 0;
     uint16_t count = 0;
     std::list<double> items;
     auto bi = std::back_inserter(items);
