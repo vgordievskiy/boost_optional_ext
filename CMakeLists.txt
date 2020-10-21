@@ -37,8 +37,7 @@ target_include_directories(boost_optional_ext_example
     ${BOOST_OPTIONAL_EXT})
     
 if(MSVC)
-  target_compile_options(boost_optional_ext PRIVATE "-Wall -Wextra")
-  target_compile_options(boost_optional_ext_example PRIVATE "-Wall -Wextra")
+  add_compile_options("-W" "-Wall")
 else()
   add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
 endif()    
