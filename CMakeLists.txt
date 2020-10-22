@@ -39,9 +39,9 @@ target_include_directories(boost_optional_ext_example
     
 if(MSVC)
   add_definitions(-D_ITERATOR_DEBUG_LEVEL=0 -DBOOST_ALL_NO_LIB)
-  add_compile_options("-W" "-Wall" "VERBOSE")
-  set_property(TARGET boost_optional_ext PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded")
-  set_property(TARGET boost_optional_ext_example PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded")
+  add_compile_options("-W" "-Wall" "verbose")
+  set_property(TARGET boost_optional_ext PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+  set_property(TARGET boost_optional_ext_example PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 else()
   add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
 endif()    
