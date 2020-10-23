@@ -39,7 +39,7 @@ target_include_directories(boost_optional_ext_example
     
 if(MSVC)
   add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
-  add_compile_options("-W" "-Wall" "verbose" "/MD")
+  add_compile_options("-W" "-Wall" "verbose" "/MDd")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /VERBOSE")
 else()
   add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
