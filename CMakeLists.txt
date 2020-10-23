@@ -39,9 +39,7 @@ target_include_directories(boost_optional_ext_example
     
 if(MSVC)
   add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
-  add_compile_options("-W" "-Wall" "verbose")
-  set_property(TARGET boost_optional_ext PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
-  set_property(TARGET boost_optional_ext_example PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+  add_compile_options("-W" "-Wall" "verbose" "/MD")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /VERBOSE /NODEFAULTLIB")
 else()
   add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
