@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(case_filter_if_Accepted)
 
     const auto res = toRefOp(op) | hof::filter_if(([](auto&& el) { return !el.empty(); }));
 
-    BOOST_CHECK_EQUAL(res.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(res.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(res.get(), op.get());
     BOOST_CHECK_EQUAL(res.get_ptr(), op.get_ptr());
 }
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(case_filter_if_NotAccepted)
 
     const auto res = toRefOp(op) | hof::filter_if(([](auto&& el) { return el.empty(); }));
 
-    BOOST_CHECK_EQUAL(res.has_value(), false);
+    BOOST_REQUIRE_MESSAGE(!res.has_value(), "boost::optional has a value!");
 }
 
 BOOST_AUTO_TEST_CASE(case_filter_if_not_Accepted)
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(case_filter_if_not_Accepted)
 
     const auto res = toRefOp(op) | hof::filter_if_not(([](auto&& el) { return el.empty(); }));
 
-    BOOST_CHECK_EQUAL(res.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(res.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(res.get(), op.get());
     BOOST_CHECK_EQUAL(res.get_ptr(), op.get_ptr());
 }
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(case_filter_if_not_NotAccepted)
 
     const auto res = toRefOp(op) | hof::filter_if_not(([](auto&& el) { return !el.empty(); }));
 
-    BOOST_CHECK_EQUAL(res.has_value(), false);
+    BOOST_REQUIRE_MESSAGE(!res.has_value(), "boost::optional has a value!");
 }
 
 BOOST_AUTO_TEST_CASE(case_filter_if_not_not_const_Accepted)
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(case_filter_if_not_not_const_Accepted)
 
     auto res = toRefOp(op) | hof::filter_if_not(([](auto&& el) { return el.empty(); }));
 
-    BOOST_CHECK_EQUAL(res.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(res.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(res.get(), op.get());
     BOOST_CHECK_EQUAL(res.get_ptr(), op.get_ptr());
 }
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(case_match_some)
      | hof::match_some(log)
     ;
 
-    BOOST_CHECK_EQUAL(res.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(res.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(strLen, std::get<1>(*res).size());
 }
 
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(case_match_some_none)
      | hof::match(some, none)
     ;
 
-    BOOST_CHECK_EQUAL(res.has_value(), false);
+    BOOST_REQUIRE_MESSAGE(!res.has_value(), "boost::optional has a value!");
     BOOST_CHECK_EQUAL(isNone, true);
 }
 
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(case_match_some_2)
      | hof::filter_if(isPositive)
      | hof::match_some(some);
 
-    BOOST_CHECK_EQUAL(res.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(res.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(isSome, true);
 }
 
