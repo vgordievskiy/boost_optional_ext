@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(std_function)
 
     auto op = cOp | stdFun;
 
-    BOOST_CHECK_EQUAL(op.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(op.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(op.get(), 0);
 }
 
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(free_fn)
     const auto cOp = boost::make_optional(1); 
     auto op = cOp | freeFn;
 
-    BOOST_CHECK_EQUAL(op.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(op.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(op.get(), 0);
 }
 
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(std_bind)
 
     auto op = cOp | std::bind(&TestClass::action, &task, std::placeholders::_1);
 
-    BOOST_CHECK_EQUAL(op.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(op.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(op.get(), 10);
 }
 
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(static_method)
     const auto cOp = boost::make_optional(1); 
     auto op = cOp | TestClass::action;
 
-    BOOST_CHECK_EQUAL(op.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(op.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(op.get(), 0);
 }
 
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(template_fn_with_instantiation)
     const auto cOp = boost::make_optional(1); 
     auto op =  cOp | freeTmplFn<int>;
 
-    BOOST_CHECK_EQUAL(op.has_value(), true);
+    BOOST_REQUIRE_MESSAGE(op.has_value(), "boost::optional has no value!");
     BOOST_CHECK_EQUAL(op.get(), "1");
 }
 
