@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(case_match_some)
 {
     auto op = boost::make_optional(std::make_tuple(10, std::string("ten")));
 
-    int strLen = 0;
+    size_t strLen = 0;
 
     auto isPositive = [](auto&& el) { return std::get<0>(el) > 0; };
     auto log = [&strLen](auto&& el) mutable { 
