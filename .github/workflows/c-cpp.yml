@@ -53,3 +53,7 @@ jobs:
         run: |
           cmake --build ./Build
         shell: bash
+      - name: Run tests
+        run: ./boost_optional_ext.exe --log_level=message
+        working-directory: Build/bin
+        shell: bash
