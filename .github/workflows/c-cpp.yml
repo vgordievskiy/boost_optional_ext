@@ -49,7 +49,11 @@ jobs:
           export PATH=$PATH:/home/runner/.local/bin
           ./configure_win.sh
         shell: bash 
-      #- name: Build
-        #run: |
-        #  cmake --build ./Build --config Debug
-        #shell: bash
+      - name: Build
+        run: |
+          cmake --build ./Build
+        shell: bash
+      - name: Run tests
+        run: ./boost_optional_ext.exe --log_level=message
+        working-directory: Build/bin
+        shell: bash
