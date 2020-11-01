@@ -51,7 +51,9 @@ source_group("src"
     
 if(MSVC)
   add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
-  add_compile_options("-W" "-Wall" "verbose" "/MDd")
+  add_compile_options("-W" "-Wall" "verbose")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MD")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /VERBOSE")
 else()
   add_compile_options("-W" "-Wall" "-O0" "-g" "-pedantic")
