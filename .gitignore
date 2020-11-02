@@ -2,3 +2,7 @@ Build
 .vscode
 compile_commands.json
 .ccls-cache
+
+# MacOS metadata
+.DS_Store
+boost/.DS_Store
