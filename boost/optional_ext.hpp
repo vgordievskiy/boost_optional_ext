@@ -490,7 +490,7 @@ inline deduced_result operator<<=(TOptional&& op, Functor&& f) noexcept(noexcept
 {
     if (op)
     {
-        return op.get();
+        return std::forward<TOptional>(op).value();
     }
     else
     {
@@ -531,7 +531,7 @@ inline ValueType operator<<=(TOptional&& op, ValueType&& value) noexcept(true)
 {
     if (op)
     {
-        return op.get();
+        return std::forward<TOptional>(op).value();
     }
     else
     {
