@@ -84,7 +84,10 @@ void DataConsumer::startDataHandler(service::IDataProvider& provider)
             errors += 1;
         };
 
-        auto filter = [] (auto&& el) { return el >= 0 && el <= 50; };
+        auto filter = [] (auto&& el)
+          { 
+              return std::isgreaterequal(el, 0.0) && std::islessequal(el, 50.0);
+          };
 
         auto log = [] (auto&& el) {
             std::cout << "New Value accepted: " << el << std::endl;

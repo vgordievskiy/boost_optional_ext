@@ -297,11 +297,11 @@ template <typename TOptional,
           typename boost::enable_if_c<deducer::is_map_like, int>::type = 0,
           typename boost::enable_if_c<!deducer::has_higher_order_functon, int>::type = 0>
 // clang-format on
-inline boost::optional<deduced_result> operator|(TOptional&& op, Functor&& f) noexcept(noexcept(f(op.get())))
+inline boost::optional<deduced_result> operator|(TOptional&& op, Functor&& f) noexcept(noexcept(f(std::forward<TOptional>(op).value())))
 {
     if (op)
     {
-        return f(op.get());
+        return f(std::forward<TOptional>(op).value());
     }
     else
     {
@@ -351,11 +351,11 @@ template <typename TOptional,
           typename boost::enable_if_c<deducer::is_flat_map_like, int>::type = 1,
           typename boost::enable_if_c<!deducer::has_higher_order_functon, int>::type = 0>
 // clang-format on
-inline boost::optional<deduced_result> operator|(TOptional&& op, Functor&& f) noexcept(noexcept(f(op.get())))
+inline boost::optional<deduced_result> operator|(TOptional&& op, Functor&& f) noexcept(noexcept(f(std::forward<TOptional>(op).value())))
 {
     if (op)
     {
-        return f(op.get());
+        return f(std::forward<TOptional>(op).value());
     }
     else
     {
@@ -541,15 +541,21 @@ inline ValueType operator<<=(TOptional&& op, ValueType&& value) noexcept(true)
 
 
 template <typename T>
-typename boost::optional<typename boost::optional<T>::reference_const_type> toRefOp(const boost::optional<T>& op) noexcept(noexcept(op.get()))
+typename boost::optional<typename boost::optional<T>::reference_const_type> toRefOp(const boost::optional<T>& op) noexcept(noexcept(op.value()))
 {
-    return op.get();
+    return op.value();
 }
 
 template <typename T>
-typename boost::optional<typename boost::optional<T>::reference_type> toRefOp(boost::optional<T>& op) noexcept(noexcept(op.get()))
+typename boost::optional<typename boost::optional<T>::reference_type> toRefOp(boost::optional<T>& op) noexcept(noexcept(op.value()))
 {
-    return op.get();
+    return op.value();
+}
+
+template <typename T>
+decltype(auto) toRefOp(boost::optional<T>&& op) noexcept(noexcept(op.value()))
+{
+    return std::forward<decltype(op)>(op);
 }
 
 namespace hof {
@@ -562,15 +568,16 @@ inline decltype(auto) filter_if(TPred&& pred) noexcept(std::is_nothrow_copy_cons
         [pred = std::forward<TPred>(pred)](auto&& op) mutable noexcept(noexcept(pred(op.get())))
         {
             using TRes = typename std::remove_reference<decltype(op)>::type;
+            TRes ret = boost::none;
             if (op)
             {
                 if (pred(op.get()))
                 {
-                    return std::forward<decltype(op)>(op);
+                    ret = std::forward<decltype(op)>(op);
                 }
             }
 
-            return TRes(boost::none);
+            return ret;
         });
 }
 // clang-format on
@@ -585,15 +592,16 @@ inline decltype(auto) filter_if_not(TPred&& pred)
             noexcept(noexcept(pred(op.get())))
         {
             using TRes = typename std::remove_reference<decltype(op)>::type;
+            TRes ret;
             if (op)
             {
                 if (!pred(op.get()))
                 {
-                    return std::forward<decltype(op)>(op);
+                    ret = std::forward<decltype(op)>(op);
                 }
             }
 
-            return TRes(boost::none);
+            return ret;
         });
 }
 // clang-format on

@@ -3,6 +3,8 @@
 #include <chrono>
 #include <iterator>
 #include <iostream>
+#include <numeric>
+#include <cstdlib> 
 
 #include <boost/optional.hpp>
 #include <boost/optional_ext.hpp>
@@ -59,7 +61,10 @@ int main()
             errors += 1;
         };
 
-        auto filter = [] (auto&& el) noexcept { return el >= 0 && el <= 50; };
+        auto filter = [] (auto&& el) noexcept
+            { 
+                return std::isgreaterequal(el, 0.0) && std::islessequal(el, 50.0);
+            };
 
         auto accept = [&bi] (auto&& el) mutable noexcept {
             *bi = el;
